@@ -44,6 +44,7 @@ class CarController():
     self.car_fingerprint = CP.carFingerprint
     self.steer_rate_limited = False
     self.last_resume_frame = 0
+    self.accel = 0
 
   def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, visual_alert, hud_speed,
              left_lane, right_lane, left_lane_depart, right_lane_depart):
@@ -87,8 +88,15 @@ class CarController():
           self.last_resume_frame = frame
 
     if frame % 2 == 0 and CS.CP.openpilotLongitudinalControl:
-      lead_visible = True
-      accel = actuators.accel if enabled else 0
+      lead_visible = False
+      if enabled:
+        self.accel -= 2 * DT_CTRL
+        self.accel = max(self.accel, -2.5)
+      else:
+        self.accel = 0
+
+      # accel = actuators.accel if enabled else 0
+      accel = self.accel if enabled else 0
       accel = clip(accel, CarControllerParams.ACCEL_MIN, CarControllerParams.ACCEL_MAX)
 
       stopping = actuators.longControlState == LongCtrlState.stopping
