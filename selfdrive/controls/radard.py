@@ -164,6 +164,7 @@ class RadarD():
     radarState.canMonoTimes = list(rr.canMonoTimes)
     radarState.radarErrors = list(rr.errors)
     radarState.carStateMonoTime = sm.logMonoTime['carState']
+    clusters = []
 
     if enable_lead:
       if len(sm['modelV2'].leadsV3) > 1:
